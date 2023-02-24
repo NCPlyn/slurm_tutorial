@@ -48,8 +48,9 @@
     - Paste this and save:
         ```
         CgroupAutomount=yes
-        ConstrainCores=no
-        ConstrainRAMSpace=no
+        ConstrainCores=yes
+        ConstrainRAMSpace=yes
+        ConstrainDevices=yes
         ```
 - **Copy Munge key to every compute server**
     - With access to root on compute server
