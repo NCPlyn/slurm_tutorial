@@ -6,7 +6,7 @@
     - Compute server (slurmd):
         - `sudo apt install slurmd`
 - **Configuration**
-    - Search online for "configurator.html (version of slurmd/slurmctld)" or use&edit example file in this repo (ver. 19.xx)
+    - I recommend using/editing example connfiguration in this repo (ver. 19.05), but you can search online for "configurator.html (version of slurmd/slurmctld)"
     - Set "SlurmctldHost" to "machine name(machine domain)" (ex.: pascal(pascal.domain.cz))
     - Set "StateSaveLocation" to `/var/spool/slurmctld`
     - Set "SlurmctldLogFile" to `/var/log/slurm-llnl/slurmctld.log`
@@ -14,23 +14,33 @@
     - Set "ProctrackType" to `proctrack/cgroup`
     - Set "SlurmctldPidFile" to `/run/slurm/slurmctld.pid`
     - Set "SlurmdPidFile" to `/run/slurm/slurmd.pid`
-    - For RealMemory, Sockets, Cores etc.. use command `slurmd -C` on compute node
+    - For Nodes RealMemory, Sockets, Cores etc.. use command `slurmd -C` on compute node
     - Set "NodeName" to only the name of machine (ex.: tesla)
     - Set "NodeAddr" to the full domain address (ex. tesla.domain.cz) or ip
-     - Paste the final config file to `/etc/slurm-llnl/slurm.conf` on **every** machine
+    - If you are going to use GPUs:
+        - Add `GresTypes=gpu,mps` to the conf file
+        - Set "SelectType" to `select/cons_tres`
+        - Add `Gres=gpu:tesla:2,mps:200` to every compute node with correct gpu type/name and count, for mps refer to [this](https://slurm.schedmd.com/gres.html#MPS_Management)
+        - Create new file `/etc/slurm-llnl/gres.conf` and paste this on every compute node. (Needs to be edited to fit the compute node hardware)
+        ```
+        Name=gpu Type=v100 File=/dev/nvidia0
+        Name=gpu Type=v100 File=/dev/nvidia1
+        Name=mps Count=200
+        ```
+    - Paste the final config file to `/etc/slurm-llnl/slurm.conf` on **every** machine
 - **Create needed folders and assign permissions**
     ```
-    sudo mkdir -p /var/spool/slurmd
-    sudo mkdir -p /var/spool/slurmctld
-    sudo mkdir -p /var/log/slurm-llnl
-    sudo mkdir -p /run/slurm
-    sudo chmod -R 755 /var/spool/slurmd
-    sudo chmod -R 755 /var/spool/slurmctld
-    sudo chmod -R 755 /var/log/slurm-llnl
-    sudo chmod -R 755 /run/slurm
-    sudo chown -R slurm:slurm /var/spool/slurmd
-    sudo chown -R slurm:slurm /var/spool/slurmctld
-    sudo chown -R slurm:slurm /var/log/slurm-llnl
+    sudo mkdir -p /var/spool/slurmd &
+    sudo mkdir -p /var/spool/slurmctld &
+    sudo mkdir -p /var/log/slurm-llnl &
+    sudo mkdir -p /run/slurm &
+    sudo chmod -R 755 /var/spool/slurmd &
+    sudo chmod -R 755 /var/spool/slurmctld &
+    sudo chmod -R 755 /var/log/slurm-llnl &
+    sudo chmod -R 755 /run/slurm &
+    sudo chown -R slurm:slurm /var/spool/slurmd &
+    sudo chown -R slurm:slurm /var/spool/slurmctld &
+    sudo chown -R slurm:slurm /var/log/slurm-llnl &
     sudo chown -R slurm:slurm /run/slurm
     ```
 - **Configure tmpfiles.d**
