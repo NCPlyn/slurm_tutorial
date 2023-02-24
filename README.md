@@ -20,7 +20,7 @@
     - If you are going to use GPUs:
         - Add `GresTypes=gpu,mps` to the conf file
         - Set "SelectType" to `select/cons_tres`
-        - Add `Gres=gpu:tesla:2,mps:200` to every compute node with correct gpu type/name and count, for mps refer to [this](https://slurm.schedmd.com/gres.html#MPS_Management)
+        - Add `Gres=gpu:v100:2,mps:200` to every compute node with correct gpu type/name and count, for mps refer to [this](https://slurm.schedmd.com/gres.html#MPS_Management)
         - Create new file `/etc/slurm-llnl/gres.conf` and paste this on every compute node. (Needs to be edited to fit the compute node hardware)
         ```
         Name=gpu Type=v100 File=/dev/nvidia0
