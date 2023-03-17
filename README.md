@@ -71,6 +71,7 @@
             - `sudo mv /home/<node-user>/munge.key /etc/munge/munge.key`
             - `sudo chown munge:munge /etc/munge/munge.key`
     - `sudo systemctl restart munge`
+    - `sudo chown munge:munge /etc/munge/munge.key`
 - **Start slurm**
     - Control server (slurmctld):
         - `sudo systemctl enable slurmctld`
