@@ -14,6 +14,13 @@
     - Set "ProctrackType" to `proctrack/cgroup`
     - Set "SlurmctldPidFile" to `/run/slurm/slurmctld.pid`
     - Set "SlurmdPidFile" to `/run/slurm/slurmd.pid`
+    - Set "AccountingStorageLoc" to `/var/log/slurm-llnl/accounting.log`
+    - Set "AccountingStorageType" to `accounting_storage/filetxt`
+    - Set "AccountingStoreJobComment" to `YES`
+    - Set "JobCompType" to `jobcomp/filetxt`
+    - Set "JobCompLoc" to `/var/log/slurm-llnl/jobs.log`
+    - Set "JobAcctGatherFrequency" to `30`
+    - Set "JobAcctGatherType" to `jobacct_gather/linux`
     - For Nodes RealMemory, Sockets, Cores etc.. use command `slurmd -C` on compute node
     - Set "NodeName" to only the name of machine (ex.: tesla)
     - Set "NodeAddr" to the full domain address (ex. tesla.domain.cz) or ip
@@ -84,3 +91,40 @@
     - `scontrol show node` should show working compute servers
     - `sinfo` should should show idle partitions
     - `sbatch test.sh` with test.sh in this repo should return computed number Pi. Using `squeue` you should see the task being proccessed
+- **Prometheus & Grafana integration**
+    - Install GO and compile slurm-exporter on slurmctld server
+        ```
+        sudo snap install --classic --channel=1.15/stable go
+        git clone https://github.com/vpenso/prometheus-slurm-exporter.git
+        cd prometheus-slurm-exporter
+        make
+        sudo cp ./bin/prometheus-slurm-exporter /usr/bin/prometheus-slurm-exporter
+        ```
+    - Systemctl service: `sudo nano /etc/systemd/system/slurmexporter.service`
+        ```
+        [Unit]
+        Description=Prometheus SLURM Exporter
+
+        [Service]
+        User=slurm
+        ExecStart=/usr/bin/prometheus-slurm-exporter --listen-address="0.0.0.0:9410" -gpus-acct
+        Restart=always
+        RestartSec=15
+
+        [Install]
+        WantedBy=multi-user.target
+        ```
+        ```
+        sudo systemctl enable slurmexporter.service
+        sudo systemctl start slurmexporter
+        ```
+    - Prometheus config: `sudo nano /etc/prometheus/prometheus.yml` add:
+        ```
+          - job_name: "slurm"
+            scrape_interval: 30s
+            scrape_timeout: 30s
+            static_configs:
+              - targets: ["localhost:9410"]
+        ```
+        `sudo systemctl restart prometheus`
+     - In grafana import dashboard with ID: 4323
