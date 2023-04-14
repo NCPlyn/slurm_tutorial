@@ -128,3 +128,6 @@
         ```
         `sudo systemctl restart prometheus`
      - In grafana import dashboard with ID: 4323
+- **Use with LDAP, to not let users login on to the machine without having a running job**
+    - https://hpc-wiki.info/hpc/Admin_Guide_SSH_to_Compute_Nodes
+    - https://slurm.schedmd.com/pam_slurm_adopt.html
